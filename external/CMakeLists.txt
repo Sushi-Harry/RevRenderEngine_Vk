@@ -7,12 +7,11 @@ add_library(imgui STATIC
     imgui/imgui_tables.cpp
     imgui/imgui_widgets.cpp
     
-    # We only need the GLFW and Vulkan backends!
     imgui/backends/imgui_impl_glfw.cpp
     imgui/backends/imgui_impl_vulkan.cpp
-    
-    ImGuizmo/ImGuizmo.cpp
 )
+
+add_subdirectory(ImGuizmo)
 
 target_include_directories(imgui PUBLIC 
     imgui 

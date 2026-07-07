@@ -1,12 +1,12 @@
 
-file(GLOB_RECURSE BACKEND_SOURCES "src/*.cpp")
+file(GLOB_RECURSE BACKEND_SOURCES "./*.cpp")
 
 add_library(graphic_backend STATIC
     ${BACKEND_SOURCES}
 )
 
 target_include_directories(graphic_backend PUBLIC
-    include
+    ${CMAKE_CURRENT_SOURCE_DIR}
     "${CMAKE_CURRENT_SOURCE_DIR}/../external"
 )
 
