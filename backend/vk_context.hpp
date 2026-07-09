@@ -17,7 +17,14 @@ public:
     VulkanContext(GLFWwindow* windowHandle);
 
     void Init() override;
-    void SwapBuffers() override;
+    // Swapbuffers function is basically useless here since it can't do everything that the glfwSwapBuffers function was doing singlehandedly. 
+    // All of the boilerplate has been moved to the VulkanSwapchain class to keep things structured and manageable
+    // void SwapBuffers() override;
+
+    vk::raii::PhysicalDevice& GetPhysicalDevice() { return _physicalDevice; }
+    vk::raii::Device& GetDevice() { return _device; }
+    vk::raii::Queue& GetGraphicsQueue() { return _queue; }
+    vk::raii::SurfaceKHR& GetSurface() { return _surface; }
 
 private:
     GLFWwindow* _windowHandle;

@@ -199,8 +199,3 @@ void VulkanContext::CreateLogicalDevice(){
     _device = vk::raii::Device(_physicalDevice, deviceCreateInfo);
     _queue = vk::raii::Queue(_device, _queueIndex, 0);
 }
-
-void VulkanContext::SwapBuffers(){
-    // Man I have no god damn idea how to fill all the swapchain image swapping and stuff inside this function.
-    // Here's what I'm gonna do: make separate swapchain and other required classes and then figure out something along that path
-}
