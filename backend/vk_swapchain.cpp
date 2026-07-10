@@ -41,13 +41,13 @@ uint32_t VulkanSwapchain::AcquireNextImage(const vk::raii::Semaphore& presentCom
 
     try{
         std::tie(result, imageIndex) = _swapchain.acquireNextImage(
-            std::numeric_limits<uint64_t>::max(),
+            std::numeric_limits<uint32_t>::max(),
             *presentCompleteSemaphore,
             nullptr
         );
     }catch(const vk::OutOfDateKHRError error){
         Recreate();
-        return std::numeric_limits<uint64_t>::max();
+        return std::numeric_limits<uint32_t>::max();
     }
 
     if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR) {
@@ -198,9 +198,9 @@ vk::Format VulkanSwapchain::findSupportedFormat(const std::vector<vk::Format>& c
         {
         return format;
         }
-
-        throw std::runtime_error("Failed to find supported format.");
     }
+    
+    throw std::runtime_error("Failed to find supported format.");
 }
 vk::raii::ImageView VulkanSwapchain::createImageView(const vk::Image& image, vk::Format format, vk::ImageAspectFlags aspectFlags, uint32_t mipLevel) const {
     vk::ImageViewCreateInfo viewInfo{

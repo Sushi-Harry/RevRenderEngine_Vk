@@ -29,7 +29,10 @@ public:
     inline size_t GetImageCount() const { return _images.size(); }
 
     inline const vk::raii::ImageView& GetImageView(uint32_t index) const { return _imageViews[index]; }
+    inline vk::Image GetImage(uint32_t index) const { return _images[index]; }
+
     inline const vk::raii::ImageView& GetDepthImageView() const { return _depthImageView; }
+    inline vk::Image GetDepthImage() const { return *_depthImage; }
     
     vk::raii::ImageView createImageView(const vk::Image& image, vk::Format format, vk::ImageAspectFlags aspectFlags, uint32_t mipLevel) const;
     std::pair<vk::raii::Image, vk::raii::DeviceMemory> createImage(
@@ -51,6 +54,9 @@ public:
         vk::raii::Image& image,
         vk::raii::DeviceMemory& imageMemory
     );
+
+    std::vector<vk::Image>& getImages() { return _images; }
+    std::vector<vk::raii::ImageView>& getImageViews() { return _imageViews; }
 
 private:
     void CreateSwapchain();
