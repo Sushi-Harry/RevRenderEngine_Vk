@@ -11,3 +11,7 @@ Alright so it's just the 3rd day and I'm already starting to get kinda overwhelm
 
 ## 9 July, 2026 [1:18 P.M.]
 ### _Lost you in the waves, I'm underwater_
+
+## 10 July, 2026 [10:38 P.M.]
+yeah so not much to say right now cause this has mostly been a copy paste and make it work kind of exercise so far cause I'm still doing most of the rendering setup stuff which is basically just getting code over from my learning project and porting it over to this one and splitting it into classes for convenience.
+The entire thing compiles without any errors though so that's a good thing even though doing this is kinda boring for now. More on this later ig...
