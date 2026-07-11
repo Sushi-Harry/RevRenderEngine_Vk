@@ -15,3 +15,6 @@ Alright so it's just the 3rd day and I'm already starting to get kinda overwhelm
 ## 10 July, 2026 [10:38 P.M.]
 yeah so not much to say right now cause this has mostly been a copy paste and make it work kind of exercise so far cause I'm still doing most of the rendering setup stuff which is basically just getting code over from my learning project and porting it over to this one and splitting it into classes for convenience.
 The entire thing compiles without any errors though so that's a good thing even though doing this is kinda boring for now. More on this later ig...
+
+## 11 July, 2026 [4:56 P.M.]
+I am confused asf right now. Even after splitting everything into classes it's still a bit too much to handle by myself. But that's how I felt when I did a big project in opengl for the first time too so that's noting new. I'll get over it. For now I've added the shader class and its backend implementation. Just need to work on the texture class and its backend implementation and I'm thinking of moving all these object creation functions to vk_utilities.hpp cause they kinda look like unnecessary bloat to my eyes when they're included in the main classes.
