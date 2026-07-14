@@ -25,6 +25,7 @@ public:
     inline uint32_t GetCurrentFrameIndex() const { return _currentFrameIndex; }
     inline uint32_t GetCurrentImageIndex() const { return _currentImageIndex; }
     inline vk::raii::CommandBuffer& GetCurrentCommandBuffer() { return _commandBuffers[_currentFrameIndex]; }
+    vk::raii::CommandPool& GetCommandPool() { return _commandPool; }
 
     void TransitionImageLayout(
         uint32_t                imageIndex,

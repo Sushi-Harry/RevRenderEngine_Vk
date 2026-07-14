@@ -1,9 +1,9 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "core/keys.hpp"
-#include "core/mouse.hpp"
-#include "core/window.hpp"
+#include "keys.hpp"
+#include "mouse.hpp"
+#include "window.hpp"
 
 //   \      /
 //    \    /
