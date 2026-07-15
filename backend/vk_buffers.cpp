@@ -1,4 +1,24 @@
 #include "vk_buffers.hpp"
+#include "vk_renderer.hpp"
+#include "vk_rendering_api.hpp"
+
+std::shared_ptr<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size) {
+    return std::make_shared<VulkanVertexBuffer>(
+        VulkanRenderingAPI::GetContext(), 
+        VulkanRenderingAPI::GetRenderer(), 
+        vertices, 
+        size
+    );
+}
+
+std::shared_ptr<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count) {
+    return std::make_shared<VulkanIndexBuffer>(
+        VulkanRenderingAPI::GetContext(), 
+        VulkanRenderingAPI::GetRenderer(), 
+        indices, 
+        count
+    );
+}
 
 // \        /       .===.
 //  \      /       |     |

@@ -18,3 +18,6 @@ The entire thing compiles without any errors though so that's a good thing even 
 
 ## 11 July, 2026 [4:56 P.M.]
 I am confused asf right now. Even after splitting everything into classes it's still a bit too much to handle by myself. But that's how I felt when I did a big project in opengl for the first time too so that's noting new. I'll get over it. For now I've added the shader class and its backend implementation. Just need to work on the texture class and its backend implementation and I'm thinking of moving all these object creation functions to vk_utilities.hpp cause they kinda look like unnecessary bloat to my eyes when they're included in the main classes.
+
+## 15 July, 2026 [4:31 P.M.]
+Alright so I'm still pretty confused about everything but I'm figuring it out one step at a time. Went on a mini vacation which is why there's a gap between this entry and the previous entry. But I did get some stuff done in the middle of everything. Will work on wiring up everything and finishing the incomplete classes for today.

@@ -3,6 +3,12 @@
 
 #include <fstream>
 
+#include "vk_rendering_api.hpp"
+
+std::shared_ptr<Shader> Shader::Create(const std::string& name, const std::string& v_path, const std::string& f_path) {
+    return std::make_shared<VulkanShader>(VulkanRenderingAPI::GetContext(), name, v_path, f_path);
+}
+
 // Helper functions to read the code from the provided file path
 std::vector<char> VulkanShader::ReadFile(const std::string& path) {
     std::ifstream file(path, std::ios::ate | std::ios::binary);
@@ -26,7 +32,7 @@ vk::raii::ShaderModule VulkanShader::CreateShaderModule(const std::vector<char>&
     return shaderModule;
 }
 
-VulkanShader::VulkanShader(VulkanContext* context, const std::string& vertexPath, const std::string& fragmentPath) : _context(context) {
+VulkanShader::VulkanShader(VulkanContext* context, const std::string& name, const std::string& vertexPath, const std::string& fragmentPath) : _context(context), _name(std::move(name)) {
     std::vector<char> vertexCode = ReadFile(vertexPath);
     std::vector<char> fragmentCode = ReadFile(fragmentPath);
 

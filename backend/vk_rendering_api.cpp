@@ -1,8 +1,27 @@
 #include <stdexcept>
 #include <array>
 #include "vk_rendering_api.hpp"
+#include "application.hpp"
+
+static VulkanRenderingAPI* _VulkanAPI_Instance = nullptr;
+
+std::unique_ptr<RenderingAPI> RenderingAPI::Create(){
+    return std::make_unique<VulkanRenderingAPI>();
+}
 
 void VulkanRenderingAPI::Init() {
+    _VulkanAPI_Instance = this;
+
+    GLFWwindow* windowHandle = static_cast<GLFWwindow*>(Application::getInstance().getWindow().getNativeWindow());
+    _context = new VulkanContext(windowHandle);
+    _context->Init();
+
+    _swapchain = new VulkanSwapchain(_context, windowHandle);
+    _swapchain->Init();
+
+    _renderer = new VulkanRenderer(_context, _swapchain);
+    _renderer->Init();
+
     if (!_context || !_swapchain || !_renderer) {
         throw std::runtime_error("VulkanRendererAPI requires initialized Context, Swapchain, and Renderer!");
     }
@@ -98,3 +117,6 @@ void VulkanRenderingAPI::DrawIndexed(uint32_t indexCount){
     }
 }
 
+VulkanContext* VulkanRenderingAPI::GetContext() { return _VulkanAPI_Instance->_context; }
+VulkanSwapchain* VulkanRenderingAPI::GetSwapchain() { return _VulkanAPI_Instance->_swapchain; }
+VulkanRenderer* VulkanRenderingAPI::GetRenderer() { return _VulkanAPI_Instance->_renderer; }

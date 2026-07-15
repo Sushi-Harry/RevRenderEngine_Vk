@@ -16,6 +16,11 @@ public:
     void EndFrame() override;
     void DrawIndexed(uint32_t indexCount) override;
 
+    // Need these to fetch the context, swapchain and renderer variables on the fly in other classes
+    static VulkanContext* GetContext();
+    static VulkanSwapchain* GetSwapchain();
+    static VulkanRenderer* GetRenderer();
+
 private:
     VulkanContext* _context;
     VulkanSwapchain* _swapchain;

@@ -7,6 +7,13 @@
 #include "stb_image.h"
 
 #include "vk_utilities.hpp"
+#include "vk_rendering_api.hpp"
+
+std::shared_ptr<Texture2D> Texture2D::Create(const std::string& path){
+    VulkanContext* context = VulkanRenderingAPI::GetContext();
+    VulkanRenderer* renderer = VulkanRenderingAPI::GetRenderer();
+    return std::make_shared<VulkanTexture2D>(context, renderer, path);
+}
 
 VulkanTexture2D::VulkanTexture2D(VulkanContext* context, VulkanRenderer* renderer, const std::string& path) : _context(context), _renderer(renderer), _path(std::move(path)){
     int width, height, nrChannels;
@@ -203,7 +210,7 @@ void VulkanTexture2D::GenerateMipmaps(
             },
             .dstOffsets = std::array<vk::Offset3D, 2>({{}, {1 < mipWidth ? mipWidth / 2 : 1, 1 < mipHeight ? mipHeight / 2 : 1, 1}})
         };
-        commandBuffer.blitImage(image, vk::ImageLayout::eTransferSrcOptimal, image, vk::ImageLayout::eTransferDstOptimal, blit, vk::Filter::eLinear);
+        commandBuffer.blitImage(*image, vk::ImageLayout::eTransferSrcOptimal, *image, vk::ImageLayout::eTransferDstOptimal, blit, vk::Filter::eLinear);
         barrier.oldLayout     = vk::ImageLayout::eTransferSrcOptimal;
         barrier.newLayout     = vk::ImageLayout::eShaderReadOnlyOptimal;
         barrier.srcAccessMask = vk::AccessFlagBits::eTransferRead;

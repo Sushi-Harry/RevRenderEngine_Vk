@@ -13,7 +13,7 @@ public:
     uint32_t getWidth() override { return _data.width; }
     uint32_t getHeight() override { return _data.height; }
 
-    void* getGLWindow() const override { return  _window; }
+    void* getNativeWindow() const override { return  _window; }
 
 private:
     virtual void Init(const WindowProperties& props);

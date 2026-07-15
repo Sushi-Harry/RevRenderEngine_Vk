@@ -6,6 +6,7 @@
 class GeneralRenderCalls{
 public:
     static void Init(){
+        _render_api = RenderingAPI::Create();
         _render_api->Init();
     }
     static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height){
@@ -18,7 +19,7 @@ public:
         _render_api->Clear();
     }
     static bool BeginFrame() {
-        _render_api->BeginFrame();
+        return _render_api->BeginFrame();
     }
     static void EndFrame(){
         _render_api->EndFrame();

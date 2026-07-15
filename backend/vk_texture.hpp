@@ -13,6 +13,7 @@ import vulkan_hpp;
 
 class VulkanContext;
 class VulkanRenderer;
+
 class VulkanTexture2D : public Texture2D {
 public:
     VulkanTexture2D(VulkanContext* context, VulkanRenderer* renderer, const std::string& path);
@@ -20,8 +21,9 @@ public:
 
     uint32_t GetWidth() const override { return _width; }
     uint32_t GetHeight() const override { return _height; }
-    
-    void Bind(uint32_t slot = 0) const override;
+    const TextureInfo& GetTextureInfo() const override { return _textureInfo; }
+
+    void Bind(uint32_t slot = 0) const override {};
 
     inline const vk::raii::ImageView& GetImageView() const { return _imageView; }
     inline const vk::raii::Sampler& GetSampler() const { return _sampler; }
@@ -57,6 +59,7 @@ private:
 
     VulkanContext* _context;
     VulkanRenderer* _renderer;
+    TextureInfo _textureInfo;
 
     uint32_t _width, _height;
     uint32_t _mipLevels;
