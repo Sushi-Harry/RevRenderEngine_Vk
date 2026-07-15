@@ -9,6 +9,27 @@ std::unique_ptr<RenderingAPI> RenderingAPI::Create(){
     return std::make_unique<VulkanRenderingAPI>();
 }
 
+const vk::raii::DescriptorSetLayout& VulkanRenderingAPI::GetTextureDescriptorLayout() {
+    return _VulkanAPI_Instance->_textureSetLayout;
+}
+
+void VulkanRenderingAPI::CreateTextureDescriptorLayout() {
+    vk::DescriptorSetLayoutBinding samplerLayoutBinding{
+        .binding = 0,
+        .descriptorType = vk::DescriptorType::eCombinedImageSampler,
+        .descriptorCount = 1,
+        .stageFlags = vk::ShaderStageFlagBits::eFragment,
+        .pImmutableSamplers = nullptr
+    };
+
+    vk::DescriptorSetLayoutCreateInfo layoutInfo{
+        .bindingCount = 1,
+        .pBindings = &samplerLayoutBinding
+    };
+
+    _textureSetLayout = vk::raii::DescriptorSetLayout(_context->GetDevice(), layoutInfo);
+}
+
 void VulkanRenderingAPI::Init() {
     _VulkanAPI_Instance = this;
 
@@ -21,6 +42,7 @@ void VulkanRenderingAPI::Init() {
 
     _renderer = new VulkanRenderer(_context, _swapchain);
     _renderer->Init();
+    CreateTextureDescriptorLayout();
 
     if (!_context || !_swapchain || !_renderer) {
         throw std::runtime_error("VulkanRendererAPI requires initialized Context, Swapchain, and Renderer!");
@@ -111,12 +133,12 @@ void VulkanRenderingAPI::EndFrame(){
     _activeCommandBuffer = nullptr;
 }
 
-void VulkanRenderingAPI::DrawIndexed(uint32_t indexCount){
-    if(_activeCommandBuffer){
-        _activeCommandBuffer->drawIndexed(indexCount, 1, 0, 0, 0);
-    }
-}
-
 VulkanContext* VulkanRenderingAPI::GetContext() { return _VulkanAPI_Instance->_context; }
 VulkanSwapchain* VulkanRenderingAPI::GetSwapchain() { return _VulkanAPI_Instance->_swapchain; }
 VulkanRenderer* VulkanRenderingAPI::GetRenderer() { return _VulkanAPI_Instance->_renderer; }
+void VulkanRenderingAPI::SetActivePipelineLayout(vk::PipelineLayout layout){
+    _VulkanAPI_Instance->_activePipelineLayout = layout;
+}
+vk::PipelineLayout VulkanRenderingAPI::GetActivePipelineLayout(){
+    return _VulkanAPI_Instance->_activePipelineLayout;
+}

@@ -53,6 +53,8 @@ VulkanVertexBuffer::VulkanVertexBuffer(VulkanContext* context, VulkanRenderer* r
 
 void VulkanVertexBuffer::Bind() const {
     // Gonna leave this emptytill after I've figured out how to write this function
+    vk::raii::CommandBuffer& commandBuffer = VulkanRenderingAPI::GetRenderer()->GetCurrentCommandBuffer();
+    commandBuffer.bindVertexBuffers(0, {*_vertexBuffer}, {0});
 }
 
 void VulkanVertexBuffer::Unbind() const {}
@@ -93,5 +95,8 @@ VulkanIndexBuffer::VulkanIndexBuffer(VulkanContext* context, VulkanRenderer* ren
     CopyBuffer(_context, renderer, *stagingBuffer, *_indexBuffer, bufferSize);
 }
 
-void VulkanIndexBuffer::Bind() const {}
+void VulkanIndexBuffer::Bind() const {
+    vk::raii::CommandBuffer& commandBuffer = VulkanRenderingAPI::GetRenderer()->GetCurrentCommandBuffer();
+    commandBuffer.bindIndexBuffer(*_indexBuffer, 0, vk::IndexType::eUint32);
+}
 void VulkanIndexBuffer::Unbind() const {}

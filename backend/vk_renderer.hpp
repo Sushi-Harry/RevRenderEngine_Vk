@@ -26,6 +26,7 @@ public:
     inline uint32_t GetCurrentImageIndex() const { return _currentImageIndex; }
     inline vk::raii::CommandBuffer& GetCurrentCommandBuffer() { return _commandBuffers[_currentFrameIndex]; }
     vk::raii::CommandPool& GetCommandPool() { return _commandPool; }
+    inline const vk::raii::DescriptorPool& GetDescriptorPool() const { return _descriptorPool; }
 
     void TransitionImageLayout(
         uint32_t                imageIndex,
@@ -58,10 +59,12 @@ private:
     void CreateCommandPool();
     void CreateCommandBuffers();
     void CreateSyncObjects();
+    void CreateDescriptorPool();
 
     VulkanContext* _context;
     VulkanSwapchain* _swapchain;
 
+    vk::raii::DescriptorPool _descriptorPool = nullptr;
     vk::raii::CommandPool _commandPool = nullptr;
     std::vector<vk::raii::CommandBuffer> _commandBuffers;
 

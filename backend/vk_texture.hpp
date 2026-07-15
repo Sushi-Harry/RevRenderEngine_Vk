@@ -23,7 +23,7 @@ public:
     uint32_t GetHeight() const override { return _height; }
     const TextureInfo& GetTextureInfo() const override { return _textureInfo; }
 
-    void Bind(uint32_t slot = 0) const override {};
+    void Bind(uint32_t slot = 0) const override;
 
     inline const vk::raii::ImageView& GetImageView() const { return _imageView; }
     inline const vk::raii::Sampler& GetSampler() const { return _sampler; }
@@ -69,4 +69,5 @@ private:
     vk::raii::DeviceMemory _imageMemory = nullptr;
     vk::raii::ImageView _imageView = nullptr;
     vk::raii::Sampler _sampler = nullptr;
+    vk::raii::DescriptorSet _descriptorSet = nullptr;
 };

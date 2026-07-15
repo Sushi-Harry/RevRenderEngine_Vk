@@ -17,7 +17,7 @@ public:
     virtual bool BeginFrame() = 0;
     virtual void EndFrame() = 0;
 
-    virtual void DrawIndexed(uint32_t indexCount) = 0;
+    virtual void DrawIndexed(uint32_t indexCount, const glm::mat4& viewProj, const glm::mat4& model) = 0;
 
     static std::unique_ptr<RenderingAPI> Create();
 };

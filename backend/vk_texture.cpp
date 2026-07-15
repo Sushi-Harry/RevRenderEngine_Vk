@@ -53,6 +53,31 @@ VulkanTexture2D::VulkanTexture2D(VulkanContext* context, VulkanRenderer* rendere
 
     // Creating the texture sampler
     CreateTextureSampler();
+
+    // Getting the layout and pool requires some thinking here. (If you can't already tell, I am confused asf right now and I feel like I'm high on some weird shit or rather, I'm high on stupidity right now.)
+    vk::DescriptorSetLayout layout = *VulkanRenderingAPI::GetTextureDescriptorLayout();
+    vk::DescriptorSetAllocateInfo allocInfo {
+        .descriptorPool = *VulkanRenderingAPI::GetRenderer()->GetDescriptorPool(),
+        .descriptorSetCount = 1,
+        .pSetLayouts = &layout
+    };
+    _descriptorSet = std::move(vk::raii::DescriptorSets(_context->GetDevice(), allocInfo).front());
+    vk::DescriptorImageInfo imageInfo{
+        .sampler = *_sampler,
+        .imageView = *_imageView,
+        .imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal
+    };
+
+    vk::WriteDescriptorSet descriptorWrite{
+        .dstSet = *_descriptorSet,
+        .dstBinding = 0,
+        .dstArrayElement = 0,
+        .descriptorCount = 1,
+        .descriptorType = vk::DescriptorType::eCombinedImageSampler,
+        .pImageInfo = &imageInfo
+    };
+
+    _context->GetDevice().updateDescriptorSets(descriptorWrite, nullptr);
 }
 
 std::pair<vk::raii::Image, vk::raii::DeviceMemory> VulkanTexture2D::CreateImage(
@@ -229,4 +254,17 @@ void VulkanTexture2D::GenerateMipmaps(
     barrier.srcAccessMask                 = vk::AccessFlagBits::eTransferWrite;
     barrier.dstAccessMask                 = vk::AccessFlagBits::eShaderRead;
     commandBuffer.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader, {}, {}, {}, barrier);
+}
+
+void VulkanTexture2D::Bind(uint32_t slot) const {
+    vk::raii::CommandBuffer& commandBuffer = VulkanRenderingAPI::GetRenderer()->GetCurrentCommandBuffer();
+    vk::PipelineLayout activeLayout = VulkanRenderingAPI::GetActivePipelineLayout();
+
+    commandBuffer.bindDescriptorSets(
+        vk::PipelineBindPoint::eGraphics, 
+        activeLayout, 
+        slot, 
+        {*_descriptorSet},
+        nullptr
+    );
 }

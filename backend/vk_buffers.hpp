@@ -20,6 +20,10 @@ public:
     void Bind() const override;
     void Unbind() const override;
 
+    void SetData(const void* data, uint32_t size) override;
+    const BufferLayout& GetLayout() const override;
+    void SetLayout(const BufferLayout& layout) override;
+
     inline const vk::Buffer& GetBuffer() const { return *_vertexBuffer; }
 
 private:

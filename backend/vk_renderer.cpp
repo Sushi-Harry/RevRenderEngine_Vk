@@ -9,6 +9,7 @@ void VulkanRenderer::Init() {
     CreateCommandPool();
     CreateCommandBuffers();
     CreateSyncObjects();
+    CreateDescriptorPool();
 }
 
 void VulkanRenderer::Cleanup(){
@@ -138,3 +139,19 @@ void VulkanRenderer::TransitionImageLayout(
     commandBuffer.pipelineBarrier2(dependencyInfo);
     endSingleTimeCommand(std::move(commandBuffer), _context->GetGraphicsQueue());
 }
+
+void VulkanRenderer::CreateDescriptorPool(){
+    std::vector<vk::DescriptorPoolSize> poolSizes = {
+        {vk::DescriptorType::eUniformBuffer, 10},
+        {vk::DescriptorType::eCombinedImageSampler, 10}
+    };
+
+    vk::DescriptorPoolCreateInfo poolInfo{
+        .flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet,
+        .maxSets = 20, // Total number of individual sets we can allocate
+        .poolSizeCount = static_cast<uint32_t>(poolSizes.size()),
+        .pPoolSizes = poolSizes.data()
+    };
+    _descriptorPool = vk::raii::DescriptorPool(_context->GetDevice(), poolInfo);
+}
+

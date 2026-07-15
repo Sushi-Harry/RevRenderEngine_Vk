@@ -1,5 +1,6 @@
 #pragma once
 
+#include "buffers.hpp"
 #include "vk_context.hpp"
 #include "vk_renderer.hpp"
 #if defined(__INTELLISENSE__) || !defined(USE_CPP20_MODULES)
@@ -86,4 +87,18 @@ static void CopyBuffer(VulkanContext* context, VulkanRenderer* renderer, vk::Buf
     commandBuffer.copyBuffer(srcBuffer, dstBuffer, copyRegion);
 
     endSingleTimeCommand(std::move(commandBuffer), context->GetGraphicsQueue());
+}
+
+static vk::Format ShaderDataTypeToVulkanFormat(ShaderDataType type){
+    switch (type) {
+        case ShaderDataType::FLOAT:  return vk::Format::eR32Sfloat;
+        case ShaderDataType::FLOAT2: return vk::Format::eR32G32Sfloat;
+        case ShaderDataType::FLOAT3: return vk::Format::eR32G32B32Sfloat;
+        case ShaderDataType::FLOAT4: return vk::Format::eR32G32B32A32Sfloat;
+        case ShaderDataType::INT:    return vk::Format::eR32Sint;
+        case ShaderDataType::INT2:   return vk::Format::eR32G32Sint;
+        case ShaderDataType::INT3:   return vk::Format::eR32G32B32Sint;
+        case ShaderDataType::INT4:   return vk::Format::eR32G32B32A32Sint;
+    }
+    return vk::Format::eUndefined;
 }

@@ -24,8 +24,8 @@ public:
     static void EndFrame(){
         _render_api->EndFrame();
     }
-    static void DrawIndexed(uint32_t indexCount){
-        _render_api->DrawIndexed(indexCount);
+    static void DrawIndexed(uint32_t indexCount, const glm::mat4& viewProj, const glm::mat4& model){
+        _render_api->DrawIndexed(indexCount, viewProj, model);
     }
 
 private:
