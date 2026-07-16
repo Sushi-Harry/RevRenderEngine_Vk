@@ -83,19 +83,53 @@ void VulkanRenderer::TransitionImageLayout(
     vk::PipelineStageFlags sourceStage;
     vk::PipelineStageFlags destinationStage;
 
-    if(oldLayout == vk::ImageLayout::eUndefined && newLayout == vk::ImageLayout::eTransferDstOptimal){
+    // if(oldLayout == vk::ImageLayout::eUndefined && newLayout == vk::ImageLayout::eTransferDstOptimal){
+    //     barrier.srcAccessMask = {};
+    //     barrier.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
+
+    //     sourceStage = vk::PipelineStageFlagBits::eTopOfPipe;
+    //     destinationStage = vk::PipelineStageFlagBits::eTransfer;
+    // }else if(oldLayout == vk::ImageLayout::eTransferDstOptimal && newLayout == vk::ImageLayout::eShaderReadOnlyOptimal){
+    //     barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+    //     barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+
+    //     sourceStage      = vk::PipelineStageFlagBits::eTransfer;
+    //     destinationStage = vk::PipelineStageFlagBits::eFragmentShader;
+    // }else{
+    //     throw std::invalid_argument("Unsupported layout transition");
+    // }
+
+    if (oldLayout == vk::ImageLayout::eUndefined && newLayout == vk::ImageLayout::eTransferDstOptimal) {
         barrier.srcAccessMask = {};
         barrier.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
-
         sourceStage = vk::PipelineStageFlagBits::eTopOfPipe;
         destinationStage = vk::PipelineStageFlagBits::eTransfer;
-    }else if(oldLayout == vk::ImageLayout::eTransferDstOptimal && newLayout == vk::ImageLayout::eShaderReadOnlyOptimal){
+    } 
+    else if (oldLayout == vk::ImageLayout::eTransferDstOptimal && newLayout == vk::ImageLayout::eShaderReadOnlyOptimal) {
         barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
         barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
-
-        sourceStage      = vk::PipelineStageFlagBits::eTransfer;
+        sourceStage = vk::PipelineStageFlagBits::eTransfer;
         destinationStage = vk::PipelineStageFlagBits::eFragmentShader;
-    }else{
+    } 
+    else if (oldLayout == vk::ImageLayout::eUndefined && newLayout == vk::ImageLayout::eColorAttachmentOptimal) {
+        barrier.srcAccessMask = {};
+        barrier.dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eColorAttachmentRead;
+        sourceStage = vk::PipelineStageFlagBits::eTopOfPipe;
+        destinationStage = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+    } 
+    else if (oldLayout == vk::ImageLayout::eUndefined && newLayout == vk::ImageLayout::eDepthAttachmentOptimal) {
+        barrier.srcAccessMask = {};
+        barrier.dstAccessMask = vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+        sourceStage = vk::PipelineStageFlagBits::eTopOfPipe;
+        destinationStage = vk::PipelineStageFlagBits::eEarlyFragmentTests | vk::PipelineStageFlagBits::eLateFragmentTests;
+    } 
+    else if (oldLayout == vk::ImageLayout::eColorAttachmentOptimal && newLayout == vk::ImageLayout::ePresentSrcKHR) {
+        barrier.srcAccessMask = vk::AccessFlagBits::eColorAttachmentWrite;
+        barrier.dstAccessMask = {};
+        sourceStage = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+        destinationStage = vk::PipelineStageFlagBits::eBottomOfPipe;
+    } 
+    else {
         throw std::invalid_argument("Unsupported layout transition");
     }
     commandBuffer.pipelineBarrier(sourceStage, destinationStage, {}, {}, {}, barrier);
@@ -155,3 +189,101 @@ void VulkanRenderer::CreateDescriptorPool(){
     _descriptorPool = vk::raii::DescriptorPool(_context->GetDevice(), poolInfo);
 }
 
+void VulkanRenderer::CreateCommandPool(){
+    vk::CommandPoolCreateInfo poolInfo {
+        .flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
+        .queueFamilyIndex = _context->GetGraphicsQueueIndex()
+    };
+
+    _commandPool = vk::raii::CommandPool(_context->GetDevice(), poolInfo);
+}
+
+void VulkanRenderer::CreateCommandBuffers(){
+    vk::CommandBufferAllocateInfo allocInfo{
+        .commandPool = _commandPool,
+        .level = vk::CommandBufferLevel::ePrimary,
+        .commandBufferCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT)
+    };
+
+    _commandBuffers = vk::raii::CommandBuffers(_context->GetDevice(), allocInfo);
+}
+
+void VulkanRenderer::CreateSyncObjects(){
+    _imageAvailableSemaphores.reserve(MAX_FRAMES_IN_FLIGHT);
+    _renderFinishedSemaphores.reserve(MAX_FRAMES_IN_FLIGHT);
+    _inFlightFences.reserve(MAX_FRAMES_IN_FLIGHT);
+
+    vk::SemaphoreCreateInfo semaphoreInfo{};
+        
+    vk::FenceCreateInfo fenceInfo{
+        .flags = vk::FenceCreateFlagBits::eSignaled 
+    };
+
+    for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        _imageAvailableSemaphores.emplace_back(_context->GetDevice(), semaphoreInfo);
+        _renderFinishedSemaphores.emplace_back(_context->GetDevice(), semaphoreInfo);
+        _inFlightFences.emplace_back(_context->GetDevice(), fenceInfo);
+    }
+}
+
+// Main functions
+vk::raii::CommandBuffer& VulkanRenderer::BeginFrame(){
+    if(_isFrameStarted){
+        throw std::runtime_error("Called BeginFrame while in frame");
+    }
+
+    auto waitResult = _context->GetDevice().waitForFences({*_inFlightFences[_currentFrameIndex]}, vk::True, UINT64_MAX);
+    if (waitResult != vk::Result::eSuccess) {
+        throw std::runtime_error("Failed to wait for in-flight fence");
+    }
+
+    _currentImageIndex = _swapchain->AcquireNextImage(_imageAvailableSemaphores[_currentFrameIndex]);
+
+    if (_currentImageIndex == std::numeric_limits<uint32_t>::max()) {
+        throw std::runtime_error("Swapchain recreated, skipping frame"); 
+    }
+
+    _context->GetDevice().resetFences({*_inFlightFences[_currentFrameIndex]});
+
+    vk::raii::CommandBuffer& commandBuffer = _commandBuffers[_currentFrameIndex];
+    commandBuffer.reset();
+
+    vk::CommandBufferBeginInfo beginInfo{};
+    commandBuffer.begin(beginInfo);
+
+    _isFrameStarted = true;
+    return commandBuffer;
+
+    // Here's how it flows
+    /*
+        first, Wait for the previous frame to finish
+        then acquire the next image from swapchain class (If it returns the max integer, it means the swapchain was just recreated)
+        reset the fence if we are submitting work
+        reset and begin the command buffer
+    */
+}
+
+void VulkanRenderer::EndFrame(){
+    if(!_isFrameStarted){
+        throw std::runtime_error("Can't call EndFrame while not in frame");
+    }
+    vk::raii::CommandBuffer& commandBuffer = _commandBuffers[_currentFrameIndex];
+
+    commandBuffer.end();
+    vk::PipelineStageFlags waitStage = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+    vk::SubmitInfo submitInfo{
+        .waitSemaphoreCount = 1,
+        .pWaitSemaphores = &*_imageAvailableSemaphores[_currentFrameIndex],
+        .pWaitDstStageMask = &waitStage,
+        .commandBufferCount = 1,
+        .pCommandBuffers = &*commandBuffer,
+        .signalSemaphoreCount = 1,
+        .pSignalSemaphores = &*_renderFinishedSemaphores[_currentFrameIndex]
+    };
+
+    _context->GetGraphicsQueue().submit(submitInfo, *_inFlightFences[_currentFrameIndex]);
+    _swapchain->Present(_renderFinishedSemaphores[_currentFrameIndex], _currentImageIndex);
+    
+    _isFrameStarted = false;
+    _currentFrameIndex = (_currentFrameIndex + 1) % MAX_FRAMES_IN_FLIGHT;
+}

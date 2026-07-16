@@ -25,6 +25,7 @@ public:
     vk::raii::Device& GetDevice() { return _device; }
     vk::raii::Queue& GetGraphicsQueue() { return _queue; }
     vk::raii::SurfaceKHR& GetSurface() { return _surface; }
+    inline uint32_t GetGraphicsQueueIndex() const { return _queueIndex; }
 
 private:
     GLFWwindow* _windowHandle;

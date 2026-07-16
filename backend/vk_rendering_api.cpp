@@ -80,7 +80,7 @@ bool VulkanRenderingAPI::BeginFrame(){
     // so I'll transition the color image to attachment optimal state
     _renderer->TransitionImageLayout(*_activeCommandBuffer, _swapchain->GetImage(imageIndex), vk::ImageLayout::eUndefined, vk::ImageLayout::eColorAttachmentOptimal, vk::ImageAspectFlagBits::eColor, 1);
     // And then the depth image to attachmeent optimal state
-    _renderer->TransitionImageLayout(*_activeCommandBuffer, _swapchain->GetDepthImage(), vk::ImageLayout::eUndefined, vk::ImageLayout::eColorAttachmentOptimal, vk::ImageAspectFlagBits::eDepth, 1);
+    _renderer->TransitionImageLayout(*_activeCommandBuffer, _swapchain->GetDepthImage(), vk::ImageLayout::eUndefined, vk::ImageLayout::eDepthAttachmentOptimal, vk::ImageAspectFlagBits::eDepth, 1);
 
     vk::ClearValue clearColor {
         .color = vk::ClearColorValue{
@@ -141,4 +141,24 @@ void VulkanRenderingAPI::SetActivePipelineLayout(vk::PipelineLayout layout){
 }
 vk::PipelineLayout VulkanRenderingAPI::GetActivePipelineLayout(){
     return _VulkanAPI_Instance->_activePipelineLayout;
+}
+
+void VulkanRenderingAPI::DrawIndexed(uint32_t indexCount, const glm::mat4& viewProj, const glm::mat4& model){
+    if(!_activeCommandBuffer){
+        return;
+    }
+
+    PushConstantData pushData{
+        .viewProjection = viewProj,
+        .model = model
+    };
+
+    _activeCommandBuffer->pushConstants<PushConstantData>(
+        _activePipelineLayout, 
+        vk::ShaderStageFlagBits::eVertex, 
+        0, 
+        pushData
+    );
+
+    _activeCommandBuffer->drawIndexed(indexCount, 1, 0, 0, 0);
 }

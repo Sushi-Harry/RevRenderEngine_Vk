@@ -14,6 +14,7 @@ public:
     uint32_t getHeight() override { return _data.height; }
 
     void* getNativeWindow() const override { return  _window; }
+    bool shouldClose() override { return glfwWindowShouldClose(_window); }
 
 private:
     virtual void Init(const WindowProperties& props);

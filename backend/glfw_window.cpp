@@ -13,6 +13,15 @@ glfw_window::~glfw_window(){
     Shutdown();
 }
 
+void glfw_window::onUpdate() {
+    glfwPollEvents();
+}
+
+void glfw_window::Shutdown() {
+    glfwDestroyWindow(_window);
+    glfwTerminate();
+}
+
 void glfw_window::Init(const WindowProperties& props){
     _data.title = props._name;
     _data.width = props._width;

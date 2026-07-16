@@ -5,7 +5,7 @@
 
 class Application{
 public:
-    Application(std::unique_ptr<Window> window, const std::string& app_name = "RevRenderVK");
+    Application(Window* window, const std::string& app_name = "RevRenderVK");
     virtual ~Application();
 
     // This is the main rendering loop
