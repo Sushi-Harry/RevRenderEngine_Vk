@@ -2,6 +2,7 @@
 #include "event_dispatcher.hpp"
 #include "rendering_command.hpp"
 #include "layer_stack.hpp"
+#include "delta_time.hpp"
 
 Application* Application::_instance =nullptr;
 std::unique_ptr<RenderingAPI> GeneralRenderCalls::_render_api = nullptr;
@@ -81,6 +82,7 @@ void Application::Run(){
 
     GeneralRenderCalls::SetClearColor(0.5F, 0.0F, 0.5F, 1.0F);
     while (_isRunning) {
+        Time::calculateDeltaTime();
         if (GeneralRenderCalls::BeginFrame()) {
             GeneralRenderCalls::Clear(); 
             GeneralRenderCalls::SetViewport(0, 0, _window->getWidth(), _window->getHeight());
