@@ -74,7 +74,7 @@ bool VulkanRenderingAPI::BeginFrame(){
         return false;
     }
 
-    uint32_t imageIndex = _renderer->GetCurrentFrameIndex();
+    uint32_t imageIndex = _renderer->GetCurrentImageIndex();
     vk::Extent2D extent = _swapchain->GetExtent2D();
 
     // so I'll transition the color image to attachment optimal state
@@ -84,7 +84,7 @@ bool VulkanRenderingAPI::BeginFrame(){
 
     vk::ClearValue clearColor {
         .color = vk::ClearColorValue{
-            .float32 = {{0.0F, 0.0F, 0.0F, 1.0F}}
+            .float32 = {{_clearColor.r, _clearColor.g, _clearColor.b, _clearColor.a}}
         }
     };
     vk::ClearValue clearDepth{
@@ -125,7 +125,7 @@ void VulkanRenderingAPI::EndFrame(){
 
     _activeCommandBuffer->endRendering();
 
-    uint32_t imageIndex = _renderer->GetCurrentFrameIndex();
+    uint32_t imageIndex = _renderer->GetCurrentImageIndex();
     
     _renderer->TransitionImageLayout(*_activeCommandBuffer, _swapchain->GetImage(imageIndex), vk::ImageLayout::eColorAttachmentOptimal, vk::ImageLayout::ePresentSrcKHR, vk::ImageAspectFlagBits::eColor, 1);
     

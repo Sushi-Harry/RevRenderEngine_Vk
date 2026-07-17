@@ -10,7 +10,7 @@
 import vulkan_hpp;
 #endif
 
-vk::raii::CommandBuffer beginSingleTimeCommands(vk::raii::CommandPool& _commandPool, vk::raii::Device& _device){
+inline vk::raii::CommandBuffer beginSingleTimeCommands(vk::raii::CommandPool& _commandPool, vk::raii::Device& _device){
     vk::CommandBufferAllocateInfo allocInfo{
         .commandPool = _commandPool,
         .level = vk::CommandBufferLevel::ePrimary,
@@ -25,7 +25,7 @@ vk::raii::CommandBuffer beginSingleTimeCommands(vk::raii::CommandPool& _commandP
     return std::move(commandBuffer);
 }
 
-void endSingleTimeCommand(vk::raii::CommandBuffer &&commandBuffer, vk::raii::Queue& _graphics_queue){
+inline void endSingleTimeCommand(vk::raii::CommandBuffer &&commandBuffer, vk::raii::Queue& _graphics_queue){
     commandBuffer.end();
     
     vk::SubmitInfo submitInfo{
@@ -37,7 +37,7 @@ void endSingleTimeCommand(vk::raii::CommandBuffer &&commandBuffer, vk::raii::Que
     _graphics_queue.waitIdle();
 }
 
-uint32_t FindMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties, vk::raii::PhysicalDevice& physicalDevice){
+inline uint32_t FindMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties, vk::raii::PhysicalDevice& physicalDevice){
     vk::PhysicalDeviceMemoryProperties memProperties = physicalDevice.getMemoryProperties();
 
     for(uint32_t i = 0; i < memProperties.memoryTypeCount; i++){
@@ -49,7 +49,7 @@ uint32_t FindMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties,
     throw std::runtime_error("Failed to find suitable memory type");
 }
 
-std::pair<vk::raii::Buffer, vk::raii::DeviceMemory> createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties, VulkanContext* context){
+inline std::pair<vk::raii::Buffer, vk::raii::DeviceMemory> createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties, VulkanContext* context){
     vk::BufferCreateInfo bufferInfo{
         .size = size, 
         .usage = usage,
@@ -66,7 +66,7 @@ std::pair<vk::raii::Buffer, vk::raii::DeviceMemory> createBuffer(vk::DeviceSize 
     return {std::move(buffer), std::move(bufferMemory)};
 }
 
-vk::raii::ImageView CreateImageView(const vk::Image& image, vk::Format format, vk::ImageAspectFlags aspectFlags, uint32_t mipLevel, vk::raii::Device& device) {
+inline vk::raii::ImageView CreateImageView(const vk::Image& image, vk::Format format, vk::ImageAspectFlags aspectFlags, uint32_t mipLevel, vk::raii::Device& device) {
     vk::ImageViewCreateInfo viewInfo{
         .image = image, 
         .viewType = vk::ImageViewType::e2D,

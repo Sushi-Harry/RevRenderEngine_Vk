@@ -5,6 +5,13 @@
 #include "vk_swapchain.hpp"
 #include "vk_rendering_api.hpp"
 
+std::unique_ptr<Pipeline> Pipeline::Create(const PipelineSpecs& specs) {
+    VulkanContext* context = VulkanRenderingAPI::GetContext();
+    VulkanSwapchain* swapchain = VulkanRenderingAPI::GetSwapchain();
+    
+    return std::make_unique<VulkanPipeline>(context, swapchain, specs);
+}
+
 VulkanPipeline::VulkanPipeline(VulkanContext* context, VulkanSwapchain* swapchain, const PipelineSpecs& specs) : _context(context), _swapchain(swapchain), _specs(specs){
     auto vkShader = std::static_pointer_cast<VulkanShader>(specs._targetShader);
     // Shader Stages

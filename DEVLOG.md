@@ -25,3 +25,6 @@ Alright so it's 10:35 P.M. and I'm writing this to remind my future self to writ
 
 ## 16 July, 2026 [7:20 P.M.]
 Man this shit is getting too mangled at this point. But I'll manage it somehow. But the window finally opens and stuff is finally starting to get put together. Window and stuff is working. Just need to add model loading and test texture and shader loading next. So next session is gonna be very fun.
+
+## 17 July, 2026 [5:26 P.M.]
+Alright so the screen clearing function works and also added a bunch of stuff that I left empty before. Resizing and stuff works too. It compiles fine and I'd say it's coming along nicely!

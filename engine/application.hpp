@@ -1,5 +1,9 @@
 #pragma once
 
+#include "buffers.hpp"
+#include "camera.hpp"
+#include "pipeline.hpp"
+#include "texture.hpp"
 #include "window.hpp"
 #include <memory>
 
@@ -21,6 +25,14 @@ private:
     std::unique_ptr<Window> _window;
     bool _isRunning = true;
     static Application* _instance;
+    
+    // These variables will be moved on to sandbox_layer.hpp/cpp 
+    Camera3D* _camera;
+    std::shared_ptr<VertexBuffer> _vertexBuffer;
+    std::shared_ptr<IndexBuffer> _indexBuffer;
+    std::shared_ptr<Texture2D> _texture;
+    std::shared_ptr<Shader> _shader;
+    std::shared_ptr<Pipeline> _pipeline;
 };
 
 Application* CreateApplication();

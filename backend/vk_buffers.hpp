@@ -20,15 +20,16 @@ public:
     void Bind() const override;
     void Unbind() const override;
 
-    void SetData(const void* data, uint32_t size) override;
-    const BufferLayout& GetLayout() const override;
-    void SetLayout(const BufferLayout& layout) override;
+    void SetData(const void* data, uint32_t size) override {}
+    const BufferLayout& GetLayout() const override { return _layout; }
+    void SetLayout(const BufferLayout& layout) override { _layout = layout; }
 
     inline const vk::Buffer& GetBuffer() const { return *_vertexBuffer; }
 
 private:
     VulkanContext* _context;
     
+    BufferLayout _layout;
     vk::raii::Buffer _vertexBuffer = nullptr;
     vk::raii::DeviceMemory _vertexBufferMemory = nullptr;
 };
@@ -49,7 +50,6 @@ private:
     VulkanContext* _context;
     VulkanRenderer* _renderer;
     uint32_t _count;
-    
     vk::raii::Buffer _indexBuffer = nullptr;
     vk::raii::DeviceMemory _indexBufferMemory = nullptr;
 };

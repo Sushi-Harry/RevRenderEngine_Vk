@@ -14,5 +14,5 @@ public:
     virtual ~Pipeline() = default;
     virtual void Bind() = 0;
     virtual const PipelineSpecs& GetSpecs() const = 0;
-    static std::shared_ptr<Pipeline> Create(const PipelineSpecs& specs);
+    static std::unique_ptr<Pipeline> Create(const PipelineSpecs& specs);
 };
