@@ -44,4 +44,21 @@ void glfw_window::Init(const WindowProperties& props){
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
     _window = glfwCreateWindow((int)_data.width, (int)_data.height, _data.title.c_str(), nullptr, nullptr);
+
+    glfwSetWindowUserPointer(_window, &_data);
+
+    glfwSetFramebufferSizeCallback(_window, [](GLFWwindow* window, int width, int height){
+        WinData& data = *(WinData*)glfwGetWindowUserPointer(window);
+
+        data.width = width;
+        data.height = height;
+        WindowResizeEvent event(width, height);
+        data.EventCallback(event);
+    });
+
+    glfwSetWindowCloseCallback(_window, [](GLFWwindow* window){
+        WinData& data = *(WinData*)glfwGetWindowUserPointer(window);
+        WindowCloseEvent e;
+        data.EventCallback(e);
+    });
 }

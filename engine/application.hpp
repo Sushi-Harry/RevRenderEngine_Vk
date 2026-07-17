@@ -6,6 +6,7 @@
 #include "texture.hpp"
 #include "window.hpp"
 #include <memory>
+#include "layer_stack.hpp"
 
 class Application{
 public:
@@ -21,11 +22,18 @@ public:
     // Returns current application instance's pointer
     static Application& getInstance() { return *_instance; }
 
+    void onEvent(Event& e);
+
 private:
+    bool onWindowClose(WindowCloseEvent& e);
+    bool onWindowResize(WindowResizeEvent& e);
+
     std::unique_ptr<Window> _window;
     bool _isRunning = true;
     static Application* _instance;
     
+    LayerStack _layer_stack;
+
     // These variables will be moved on to sandbox_layer.hpp/cpp 
     Camera3D* _camera;
     std::shared_ptr<VertexBuffer> _vertexBuffer;

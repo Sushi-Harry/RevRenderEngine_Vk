@@ -13,6 +13,8 @@ public:
     uint32_t getWidth() override { return _data.width; }
     uint32_t getHeight() override { return _data.height; }
 
+    void SetEventCallback(const EventCallbackFn& callback) override { _data.EventCallback = callback; }
+
     void* getNativeWindow() const override { return  _window; }
     bool shouldClose() override { return glfwWindowShouldClose(_window); }
 
@@ -27,6 +29,7 @@ private:
     struct WinData{
         std::string title;
         uint32_t width, height;
+        EventCallbackFn EventCallback;
     };
     WinData _data;
 };

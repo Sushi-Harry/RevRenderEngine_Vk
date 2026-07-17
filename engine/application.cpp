@@ -1,5 +1,7 @@
 #include "application.hpp"
+#include "event_dispatcher.hpp"
 #include "rendering_command.hpp"
+#include "layer_stack.hpp"
 
 Application* Application::_instance =nullptr;
 std::unique_ptr<RenderingAPI> GeneralRenderCalls::_render_api = nullptr;
@@ -8,6 +10,7 @@ Application::Application(Window* window, const std::string& name) : _window(std:
     // set _instance pointer to this pointer. Why? Well causes THIS is the current instance (~_~)
     _instance = this;
     GeneralRenderCalls::Init();
+    _window->SetEventCallback([this](Event& ev){ this->onEvent(ev); });
 
     // Testing before moving everything to sandbox_layer.hpp/.cpp
     _camera = new Camera3D(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -43,6 +46,33 @@ Application::Application(Window* window, const std::string& name) : _window(std:
 
 Application::~Application() {}
 
+void Application::onEvent(Event& e){
+    EventDispatcher ed(e);
+
+    ed.Dispatch<WindowResizeEvent>([this](WindowResizeEvent& event){ return onWindowResize(event); });
+    ed.Dispatch<WindowCloseEvent>([this](WindowCloseEvent& event){ return onWindowClose(event); });
+
+    for(auto iter = _layer_stack.rbegin(); iter != _layer_stack.rend(); iter++){
+        if(e.handled){
+            break;
+        }
+        (*iter)->onEvent(e);
+    }
+}
+
+bool Application::onWindowClose(WindowCloseEvent& e){
+    _isRunning = false;
+    return true;
+}
+
+bool Application::onWindowResize(WindowResizeEvent& e){
+    if(e.getWidth() == 0 || e.getHeight() == 0) {
+        return false;
+    }
+    GeneralRenderCalls::SetViewport(0, 0, e.getWidth(), e.getHeight());
+    return false;
+}
+
 void Application::Close(){
     _isRunning = false;
 }
@@ -51,7 +81,6 @@ void Application::Run(){
 
     GeneralRenderCalls::SetClearColor(0.5F, 0.0F, 0.5F, 1.0F);
     while (_isRunning) {
-        _window->onUpdate();
         if (GeneralRenderCalls::BeginFrame()) {
             GeneralRenderCalls::Clear(); 
             GeneralRenderCalls::SetViewport(0, 0, _window->getWidth(), _window->getHeight());
@@ -61,13 +90,13 @@ void Application::Run(){
             _indexBuffer->Bind();
             _texture->Bind(0);
 
-            glm::mat4 viewProj = glm::mat4(1.0f); 
+            glm::mat4 viewProj = _camera->getViewProjMatrix(); 
             glm::mat4 model = glm::mat4(1.0f);
             
             GeneralRenderCalls::DrawIndexed(_indexBuffer->GetCount(), viewProj, model);
 
             GeneralRenderCalls::EndFrame();
-            _isRunning = !_window->shouldClose();
         }
+        _window->onUpdate();
     }
 }

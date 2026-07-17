@@ -16,6 +16,18 @@ constexpr bool enablevalidation = false;
 // --------------------------HELPER FUNCTIONS-------------------------- //
 //----------------------------------------------------------------------//
 
+// Helper function to decode the Vendor ID
+std::string GetVendorString(uint32_t vendorID) {
+    switch (vendorID) {
+        case 0x10DE: return "NVIDIA";
+        case 0x1002: return "AMD";
+        case 0x8086: return "Intel";
+        case 0x13B5: return "ARM";
+        case 0x5143: return "Qualcomm";
+        default:     return "Unknown (" + std::to_string(vendorID) + ")";
+    }
+}
+
 const std::vector<const char*> validationLayers = {
     "VK_LAYER_KHRONOS_validation"
 };
@@ -47,6 +59,20 @@ void VulkanContext::Init() {
     CreateSurface();
     PickPhysicalDevice();
     CreateLogicalDevice();
+
+    vk::PhysicalDeviceProperties props = _physicalDevice.getProperties();
+
+    uint32_t apiVersion = props.apiVersion;
+    uint32_t major = VK_API_VERSION_MAJOR(apiVersion);
+    uint32_t minor = VK_API_VERSION_MINOR(apiVersion);
+    uint32_t patch = VK_API_VERSION_PATCH(apiVersion);
+
+    std::cout << "========================================" << std::endl;
+    std::cout << "Active GPU Vendor:   " << GetVendorString(props.vendorID) << std::endl;
+    std::cout << "Renderer Hardware:   " << props.deviceName.data() << std::endl;
+    std::cout << "Driver Version:      " << props.driverVersion << std::endl;
+    std::cout << "Vulkan API Version:  " << major << "." << minor << "." << patch << std::endl;
+    std::cout << "========================================" << std::endl;
 }
 
 void VulkanContext::CreateInstance(){

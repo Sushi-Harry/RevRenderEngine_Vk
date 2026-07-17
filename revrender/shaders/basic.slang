@@ -8,8 +8,8 @@ struct PushConstants {
 ConstantBuffer<PushConstants> push;
 
 struct VertexInput {
-    float3 position : POSITION;
-    float2 texCoord : TEXCOORD;
+    [[vk::location(0)]] float3 position : POSITION;
+    [[vk::location(1)]] float2 texCoord : TEXCOORD;
 };
 
 struct VertexOutput {

@@ -28,3 +28,4 @@ Man this shit is getting too mangled at this point. But I'll manage it somehow. 
 
 ## 17 July, 2026 [5:26 P.M.]
 Alright so the screen clearing function works and also added a bunch of stuff that I left empty before. Resizing and stuff works too. It compiles fine and I'd say it's coming along nicely!
+Alright so it's __9:10 P.M.__ right now and I've added the layer system from the opengl engine project and also added some window resizing fixes along with the events system that actually manages the different kinds of events like window closing. resizing and stuff. Great progress. And it was actually surprisingly easy to port the code over to this one since the last project's frontend is completely independent of the backend code, meaning that the backend is the only thing that differs in this project instead of literally everything being different. THANK YOU HAZEL. THANK YOU THE CHERNO!!!
