@@ -38,11 +38,15 @@ Application::Application(Window* window, const std::string& name) : _window(std:
     _texture = Texture2D::Create("revrender/assets/texture.jpg");
     // revrender/shaders/basic.slang
 
+    // Pipeline shit
     PipelineSpecs pipelineSpec{
         ._targetShader = _shader,
         ._layout = _vertexBuffer->GetLayout(),
     };
     _pipeline = Pipeline::Create(pipelineSpec);
+
+    // Input System
+    Input::Init();
 }
 
 Application::~Application() {}

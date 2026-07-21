@@ -7,6 +7,7 @@
 #include "window.hpp"
 #include <memory>
 #include "layer_stack.hpp"
+#include "input.hpp"
 
 class Application{
 public:
