@@ -33,3 +33,6 @@ Alright so it's __9:10 P.M.__ right now and I've added the layer system from the
 ## 21 July, 2026 [4:20 P.M.]
 Man I gotta say, I'm absolutely sick of the bullshit that ETGO Suziki is putting me through. Absolutely insane how they're even operational at this point. That aside, I've kinda been preoccupied with stuff related to my bike and some other stuff here and there which is why there's been so many breaks and gaps between these devlog entries. 
 Now to get back to work, I'm still thinking about whether I should implement a system to just read stuff from a json file and just create a sandbox layer or somethign with all the data parsed from the file.
+
+## 22 July, 2026 [4:18 P.M.]
+Alright so I've added some other stuff too. Resource Manager, Model Loader and stuff still needs to be done. But yeah. Not much to comment on here since it's still just ported over from the opengl version.
